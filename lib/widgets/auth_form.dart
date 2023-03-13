@@ -7,7 +7,8 @@ class AuthForm extends StatefulWidget {
     required String password,
     required bool isLogin,
   }) submitHelper;
-  AuthForm({super.key, required this.submitHelper});
+  bool isLoding;
+  AuthForm({super.key, required this.submitHelper, required this.isLoding});
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -31,9 +32,10 @@ class _AuthFormState extends State<AuthForm> {
 
       //use those values to send auth to firebase
       widget.submitHelper(
-          email: _userEmail,
-          username: _userName,
-          password: _userPassword,
+          //trim() removed extra spaces before or after text
+          email: _userEmail.trim(),
+          username: _userName.trim(),
+          password: _userPassword.trim(),
           isLogin: _isLogin);
     }
   }
@@ -100,22 +102,25 @@ class _AuthFormState extends State<AuthForm> {
                   SizedBox(
                     height: 10,
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20))),
-                    onPressed: _trySubmit,
-                    child: Text(_isLogin ? 'Login' : 'SignUp'),
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isLogin = !_isLogin;
-                        });
-                      },
-                      child: Text(_isLogin
-                          ? 'Create new account?'
-                          : 'I already have an account'))
+                  if (widget.isLoding) CircularProgressIndicator(),
+                  if (!widget.isLoding)
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20))),
+                      onPressed: _trySubmit,
+                      child: Text(_isLogin ? 'Login' : 'SignUp'),
+                    ),
+                  if (!widget.isLoding)
+                    TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isLogin = !_isLogin;
+                          });
+                        },
+                        child: Text(_isLogin
+                            ? 'Create new account?'
+                            : 'I already have an account'))
                 ],
               ),
             ),
