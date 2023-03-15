@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+
+import 'package:image_picker/image_picker.dart';
 
 import '../picker/user_image_picker.dart';
 
@@ -6,6 +9,7 @@ class AuthForm extends StatefulWidget {
   final Function({
     required String email,
     required String username,
+    required XFile userimage,
     required String password,
     required bool isLogin,
   }) submitHelper;
@@ -24,21 +28,41 @@ class _AuthFormState extends State<AuthForm> {
   String _userEmail = '';
   String _userName = '';
   String _userPassword = '';
+  XFile? _userImageFile;
+  void _pickedImage(XFile? image) {
+    _userImageFile = image;
+  }
 
   void _trySubmit() {
     bool isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-
+    if (_userImageFile == null) {
+      showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              content: Text('Please upload an image'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('Okay'))
+              ],
+            );
+          });
+      return;
+    }
     if (isValid) {
       _formKey.currentState!.save();
 
       //use those values to send auth to firebase
       widget.submitHelper(
-          //trim() removed extra spaces before or after text
-          email: _userEmail.trim(),
-          username: _userName.trim(),
-          password: _userPassword.trim(),
-          isLogin: _isLogin);
+        //trim() removed extra spaces before or after text
+        email: _userEmail.trim(),
+        username: _userName.trim(),
+        userimage: _userImageFile!,
+        password: _userPassword.trim(),
+        isLogin: _isLogin,
+      );
     }
   }
 
@@ -57,7 +81,7 @@ class _AuthFormState extends State<AuthForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (!_isLogin) UserImagePicker(),
+                  if (!_isLogin) UserImagePicker(imagePickFn: _pickedImage),
                   TextFormField(
                     key: ValueKey('email'),
                     onSaved: (value) {

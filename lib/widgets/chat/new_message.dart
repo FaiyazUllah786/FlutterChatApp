@@ -12,12 +12,18 @@ class NewMessage extends StatefulWidget {
 class _NewMessageState extends State<NewMessage> {
   final _controller = TextEditingController();
   var _enteredMessage = '';
-  void _sendMessage() {
+  void _sendMessage() async {
     final user = FirebaseAuth.instance.currentUser;
+    final userData = await FirebaseFirestore.instance
+        .collection('user')
+        .doc(user!.uid)
+        .get();
     FirebaseFirestore.instance.collection('chat').add({
       'text': _enteredMessage,
       'createdAt': Timestamp.now(),
       'userId': user!.uid,
+      'userName': userData['user'],
+      'userImage': userData['imageURL'],
     });
     _controller.clear();
   }
@@ -30,23 +36,39 @@ class _NewMessageState extends State<NewMessage> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(hintText: 'Send Message'),
-              onChanged: (value) {
-                setState(() {
-                  _enteredMessage = value;
-                });
-              },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1,
+                  color: Theme.of(context).primaryColorDark.withOpacity(0.5),
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  hintText: 'Send Message',
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _enteredMessage = value;
+                  });
+                },
+              ),
             ),
           ),
           IconButton(
-              onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage,
-              icon: Icon(
-                Icons.send_rounded,
-                size: 35,
-                color: Theme.of(context).primaryColorDark,
-              ))
+            onPressed: _enteredMessage.trim().isEmpty ? null : _sendMessage,
+            icon: Icon(
+              Icons.send_rounded,
+              size: 35,
+              color: Theme.of(context).primaryColorDark,
+            ),
+            splashColor: Theme.of(context).primaryColor,
+            splashRadius: 26,
+          ),
         ],
       ),
     );
