@@ -33,7 +33,7 @@ class Messages extends StatelessWidget {
                   //firestore method(toDate()) to convert timestamp to date
                   timeStamp: DateFormat('HH:mm')
                       .format(chatDocs[i]['createdAt'].toDate()),
-                  userId: chatDocs[i]['userId'],
+                  userName: chatDocs[i]['userName'],
                   userImage: chatDocs[i]['userImage'],
                 ));
       },

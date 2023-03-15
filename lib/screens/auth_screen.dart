@@ -24,7 +24,7 @@ class _AuthScreenState extends State<AuthScreen> {
   void _submitAuthForm({
     required String email,
     required String username,
-    required XFile userimage,
+    required XFile? userimage,
     required String password,
     required bool isLogin,
   }) async {
@@ -48,7 +48,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .ref()
             .child('user_image')
             .child(_authResult.user!.uid + '.jpg');
-        await ref.putFile(File(userimage.path)).then((_) => null);
+        await ref.putFile(File(userimage!.path)).then((_) => null);
         //adding user name in signup block
         //creating new collection for user also document and setting(updating/add) data in it
         //accessing image we upload

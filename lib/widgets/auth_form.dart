@@ -9,7 +9,7 @@ class AuthForm extends StatefulWidget {
   final Function({
     required String email,
     required String username,
-    required XFile userimage,
+    required XFile? userimage,
     required String password,
     required bool isLogin,
   }) submitHelper;
@@ -36,7 +36,7 @@ class _AuthFormState extends State<AuthForm> {
   void _trySubmit() {
     bool isValid = _formKey.currentState!.validate();
     FocusScope.of(context).unfocus();
-    if (_userImageFile == null) {
+    if (_userImageFile == null && !_isLogin) {
       showDialog(
           context: context,
           builder: (ctx) {
@@ -59,7 +59,7 @@ class _AuthFormState extends State<AuthForm> {
         //trim() removed extra spaces before or after text
         email: _userEmail.trim(),
         username: _userName.trim(),
-        userimage: _userImageFile!,
+        userimage: _userImageFile,
         password: _userPassword.trim(),
         isLogin: _isLogin,
       );

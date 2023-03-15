@@ -5,14 +5,14 @@ import 'package:image_picker/image_picker.dart';
 class MessageBubble extends StatelessWidget {
   final String message;
   final bool isMe;
-  final String userId;
+  final String userName;
   final String timeStamp;
   final String userImage;
   final Key key;
   MessageBubble(
       {required this.message,
       required this.isMe,
-      required this.userId,
+      required this.userName,
       required this.timeStamp,
       required this.userImage,
       required this.key});
@@ -48,23 +48,12 @@ class MessageBubble extends StatelessWidget {
                 crossAxisAlignment:
                     isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  FutureBuilder(
-                    future: FirebaseFirestore.instance
-                        .collection('user')
-                        .doc(userId)
-                        .get(),
-                    builder: (ctx, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text('Loading....');
-                      }
-                      return Text(
-                        snapshot.data?['user'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColorDark,
-                        ),
-                      );
-                    },
+                  Text(
+                    userName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).primaryColorDark,
+                    ),
                   ),
                   Text(
                     message,
